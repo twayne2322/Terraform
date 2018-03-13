@@ -1,7 +1,7 @@
 provider "aws" {
   region = "us-east-1"
 }
-resource "aws_instance" "example" {
+resource "aws_launch_configuration" "example" {
   ami = "ami-40d28157"
   instance_type = "t2.micro"
   vpc_security_group_ids = ["${aws_security_group.instance.id}"]
@@ -12,9 +12,14 @@ resource "aws_instance" "example" {
               nohup busybox httpd -f -p "${var.server_port}" &
               EOF
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   tags {
     Name = "terraform-example"
   }
+  image_id = ""
 }
 
 resource "aws_security_group" "instance" {
